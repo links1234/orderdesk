@@ -1,0 +1,19 @@
+name: orderdesk
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: orderdesk
+      POSTGRES_PASSWORD: orderdesk
+      POSTGRES_DB: orderdesk
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orderdesk"]
+      interval: 3s
+      retries: 20
+  app:
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      ConnectionStrings__OrderDesk: Host=db;Database=orderdesk;Username=orderdesk;Password=orderdesk
+    ports: ["127.0.0.1:8090:8080"]
